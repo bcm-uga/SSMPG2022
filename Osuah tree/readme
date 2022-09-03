@@ -1,0 +1,22 @@
+Simulated data -- Clément Gain
+
+Individuals were sampled from 100 populations in an isolation-by-distance model in a square habitat. Simulations of a polygenic trait under selection including environmental conditions and local competitors were performed in SLIM 3. The fitness of all organisms was recorded. 
+
+Four environmental variables involved in the process of local adaptation were measured at each sampled location, described by latitude and longitude. 
+
+The fitness of a population at a particular geographic location is defined as the probability of survival of organisms in the current (and future) habitat. 
+
+The genotypes.lfmm data file contains 300  individual samples genotyped at 2333 diploid loci. The format is an n x L matrix, with n = 300 and L = 2333, with individual samples in rows and genetic loci in columns. No missing data.
+
+The metadata.csv file contains meta data for the 300 individuals
+
+"id": individual ids
+
+"pop": population label. Each population contains 1 to 8 individuals.
+
+"longitude" and "latitude" are the spatial coordinates of the sample sites
+
+"bio.1" "bio.2" "bio.3" "bio.4" are environnemental variables measured in the current habitat
+
+"pred.bio.1" "pred.bio.2" "pred.bio.3" "pred.bio.4" are the same variables measured after environnemental 
+change 

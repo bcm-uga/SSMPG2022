@@ -62,11 +62,9 @@ make clean all FC=ifort
 
 Attendees will have the opportunity to explore methods by studying simulated data, discussing best practices and methodological weaknesses of these studied techniques. Practical sessions will favor interactions among participants in a collaborative spirit. 
 
-The first data set is for the **whooly marmot** populations. The whooly marmot is an emblematic species that lived in Thibaut's computer with GENEPOP code and had to survive abrupt change in environmental conditions. Thibaut recorded the fitness loss of whooly marmot populations after this change and the goal is to be as close as possible to the ground-thruth measure with genetic offset measures.   
+The first data set is for the **whooly marmot** populations. The whooly marmot is an emblematic species that lived in Thibaut's computer with GENEPOP DNA code and survived abrupt change in environmental conditions. Thibaut recorded the fitness loss of whooly marmot populations after this change and the goal is to be as close as possible to the ground-thruth measure of fitness loss with genetic offset measures.   The data consist of a matrix of genotype for $n = $ individuals genotyped at $L = $ loci. x environmental variables have been measured before and after the abrupt change in conditions. 
 
-The data consist of a matrix of genotype for $n = $ individuals genotyped at $L = $ loci. x environmental variables have been measured before and after the abrupt change in conditions. 
-
-The second data set is for the **Osuah tree** populations. Osuah (pronounced Aushooah) in a small village in the French alps with virtual tree species that grow in computer only. The Osuah tree is an emblematic species of Clement's computer with SLIM code that also survived an abrupt environmental change. Clement recorded the survival probability for each populations before and afterchange. The goal is to be as close as possible to Clement's ground-thruth measure with the genetic offset measures.   
+The second data set is for the **Osuah tree** populations. Osuah (pronounced Aussuah) in a small village in the French alps with virtual tree species that grow in computers only. The Osuah tree is an emblematic species of Clement's computer with SLIM DNA code that also survived an abrupt environmental change. Clement recorded the survival probability for each populations before and after change. The goal is to be as close as possible to Clement's ground-thruth measure of fitness loss with the genetic offset measures.  The data consist of a matrix of genotype for $n = 300$ individuals genotyped at $L = 2333$ loci. Four environmental variables have been measured before and after the abrupt change in conditions. 
 
 
 ## 3. Create research groups and submit your paper
@@ -81,4 +79,4 @@ Eeach team will be asked to present 2-3 slides for each challenge.
 
 ## 4. Evaluation
 
-Don't worry. All winners. Prizes will be provided to every one. Thibaut and Clement will reveal the truth about their simulation and what could be inferred from genotypes and environmental data.    
+Thibaut and Clement will reveal the truth about their simulation and what could be inferred from genotypes and environmental data.  Don't worry. Everyone wins! 
