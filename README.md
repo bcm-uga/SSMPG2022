@@ -10,7 +10,7 @@ Repository for [Software and Statistical Methods for Population Genetics (SSMPG 
 ### Install R and Rstudio
 To participate in the practical sessions, bring your own laptop and install [R](https://cran.r-project.org/) and [RStudio](https://www.rstudio.com/), an integrated development environment (IDE) for R.
 
-### Install R packages (LEA, add names)
+### Install R packages (LEA, gradientForest, vegan)
 To install R packages for the data analyses, copy and paste the following pieces of code in the R session
 
 ```r
@@ -25,10 +25,17 @@ devtools::install_github("bcm-uga/LEA")
 #Package lfmm (also in LEA as LEA::lfmm2)
 install.packages("lfmm")
 
+#Package gradientForest
+install.packages("gradientForest", repos="http://R-Forge.R-project.org")
+
+#Package vegan for RDA
+install.packages("vegan")
+
 #Package q-value for controlling FDR
 #Try https:// or http:// 
 source("http://bioconductor.org/biocLite.R")
 biocLite("qvalue")
+
 
 
 ```
