@@ -43,15 +43,15 @@ biocLite("qvalue")
 
 ### Install BAYPASS (to be updated)
 
-Download the archive from http://www1.montpellier.inra.fr/CBGP/software/baypass/ or directly via the following command run on a terminal:
+Download the archive for the latest stable version (2.3) from http://www1.montpellier.inra.fr/CBGP/software/baypass/ or directly via the following command run on a terminal:
 ```
-wget http://www1.montpellier.inra.fr/CBGP/software/baypass/files/baypass_2.1.tar.gz
+wget http://www1.montpellier.inra.fr/CBGP/software/baypass/files/baypass_2.3.tar.gz
 ```
 Extract the archive, *e.g.*, from a terminal:
 ```
-tar -zxvf baypass_2.1.tar.gz
+tar -zxvf baypass_2.3.tar.gz
 ```
-The source files are to be found in the *src* subdirectory. BayPass is coded in Fortran90 and can therefore be compiled for any system supporting a Fortran90 compiler using the provided Makefile. This Makefile is designed to work with either the free compiler *gfortran* (if not already installed in your system, binaries are available at https://gcc.gnu.org/wiki/GFortranBinaries and are easy to install for most Windows, Mac and Linux OS versions) or the commercial *ifort* intel Fortran compiler. 
+The source files are to be found in the *src* subdirectory. BayPass is coded in Fortran90 and can therefore be compiled for any system supporting a Fortran90 compiler using the provided Makefile. This Makefile is designed to work with either the free compiler *gfortran* (if not already installed in your system, binaries are available at https://gcc.gnu.org/wiki/GFortranBinaries and are easy to install for most Windows, Mac and Linux OS versions) or the commercial *ifort* intel Fortran compiler that is now freely available (for non commercial use) as part of the *oneAPI* Toolkit (see installation instruction for Windows, MacOS and Linux system). 
 BayPass also uses OpenMP (http://openmp.org/wp/) to implement multithreading, which allows parallel calculation on computer systems that have multiple CPUs or CPUs with multiple cores. Users thus have to make sure that the corresponding libraries are installed (which is usually the case, on Linux OS or following compiler installation previously described). The following instructions run within the *src* subdirectory allows to compile the code and to produce a binary:
 * using the *gfortran* free compiler (the command should automatically produce an executable called *g_baypass*):
 ```
