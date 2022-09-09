@@ -10,7 +10,7 @@ Repository for [Software and Statistical Methods for Population Genetics (SSMPG 
 ### Install R and Rstudio
 To participate in the practical sessions, bring your own laptop and install [R](https://cran.r-project.org/) and [RStudio](https://www.rstudio.com/), an integrated development environment (IDE) for R.
 
-### Install R packages (LEA, gradientForest, vegan)
+### Install R packages (LEA, gradientForest, vegan, qvalue)
 To install R packages for the data analyses, copy and paste the following pieces of code in the R session
 
 ```r
@@ -22,26 +22,21 @@ install.packages("devtools")
 #Package LEA (development/latest version) 
 devtools::install_github("bcm-uga/LEA")
 
-#Package lfmm (also in LEA as LEA::lfmm2)
-install.packages("lfmm")
-
 #Package gradientForest
 install.packages("gradientForest", repos="http://R-Forge.R-project.org")
 
 #Package vegan for RDA
 install.packages("vegan")
 
-#Package q-value for controlling FDR
-#Try https:// or http:// 
-source("http://bioconductor.org/biocLite.R")
-biocLite("qvalue")
-
-
+#Package qvalue for controlling FDRs
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("qvalue")
 
 ```
 
 
-### Install BAYPASS (to be updated)
+### Install BAYPASS
 
 Download the archive for the latest stable version (2.3) from http://www1.montpellier.inra.fr/CBGP/software/baypass/ or directly via the following command run on a terminal:
 ```
