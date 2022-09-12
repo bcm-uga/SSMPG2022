@@ -5,3 +5,6 @@
 .Rproj
 .DS_Store
 
+./Program\ tutorials/Tutorial\ LEA\ 3/*.geno
+./Program\ tutorials/Tutorial\ LEA\ 3/*.snmfProject
+./Program\ tutorials/Tutorial\ LEA\ 3/genotypes.snmf/*.*
