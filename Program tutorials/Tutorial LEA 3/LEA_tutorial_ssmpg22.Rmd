@@ -1,0 +1,312 @@
+---
+title: "LEA tutorial - SSMPG2022"
+author: "Olivier Francois and Clement Gain"
+date: "09/09/2022"
+output:
+  prettydoc::html_pretty:
+    self_contained: true
+    theme: cayman
+    highlight: github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+LEA is an R package dedicated to landscape population genomics and genotype-environment association (GEA) tests. LEA performs analyses of population structure (`snmf`), genome-wide tests for local adaptation (`lfmm2`), including imputation of missing genotypes, and computes measures of genetic offset based on new or predicted environments (`genetic.gap`). The R package was described in (Frichot and Francois 2015; Gain and francois 2021).
+
+
+To start analyzing population genomic data with lead, load the latest version of the package (development version 3.9.4 in this document). 
+
+```{r}
+# To install LEA, remove the comment character in the next command line 
+# devtools::install_github("bcm-uga/LEA")
+library(LEA)
+```
+
+This tutorial uses a simulated data set to illustrate the main functions of LEA, including a brief analysis of population structure, a GEA analysis using four environmental variables, and the computation of genetic offset for projections of those variables.
+
+ 
+
+## Example data set and population struture analysis
+
+The data set contains a genotypic matrix stored in an lfmm format with 200 diploid individuals (rows) genotyped at 510 SNPs (colums), a matrix with 4 correlated environmental variables (env) measured for each individual.  The data were simulated according to a spatially-explicit evolutionary scenario implemented in the individual-based simulation program SLIM3 (Haller and Messer 2019). The complex demographic scenario included colonization of the species range from a single origin, and adaptation to environmental conditions. To simulate natural selection, adaptive traits were controlled by a polygenic architecture, with weak additive effects from two (unobserved) environmental variables. From the simulation, we known that about $30\%$ of loci are under the influence of the environment. 
+
+```{r}
+data("offset_example")
+# genotypes for 200 individuals
+Y <- offset_example$geno
+
+# Four environmental variables for 200 individuals
+X <- offset_example$env
+```
+
+
+Population structure can be analyzed with PCA and with `snmf()` which produces results similar to the popular program `structure` but is much faster. The screeplot of the PCA suggests that there are three main genetic groups. 
+
+```{r}
+pc <- prcomp(Y)
+plot(pc, col = "blue")
+```
+
+
+The screeplot of the PCA of the environmental data also suggests that there are three main types of environmental conditions. 
+
+```{r}
+pc_env <- prcomp(X)
+plot(pc_env, col = "orange")
+```
+
+The next figure shows individual samples projected along the first axes of the genetic matrix, colored by their environmental similarities.
+
+
+```{r}
+cl <- kmeans(X, centers = 3)$cluster
+my_colors <- c("orange", "blue", "olivedrab")
+plot(pc$x, pch = 19, col = my_colors[cl])
+```
+
+
+
+
+The details of the `snmf()` method were described in (Frichot et al. 2014). 
+
+```{r, include = FALSE}
+write.geno(Y, "genotypes.geno")
+proj_snmf <- snmf("genotypes.geno",
+              K = 1:10, 
+                entropy = TRUE, 
+                repetitions = 1,
+                project = "new")
+```
+
+
+The method suggests four (and more) clusters, which is consistent with the isolation-by-distance model for the simulated data. 
+
+```{r}
+# plot cross-entropy criterion of all runs of the project
+plot(proj_snmf, cex = 1.2, col = "lightblue", pch = 19)
+```
+
+The barchart function can be used to display the barplot. 
+
+```{r}
+# display the Q-matrix
+
+my.colors <- c("tomato", "lightblue", 
+              "olivedrab", "gold")
+
+barchart(proj_snmf, K = 4,  
+        border = NA, space = 0, col = my.colors, 
+        xlab = "Individuals", ylab = "Ancestry proportions", 
+        main = "Ancestry matrix") -> bp
+        
+axis(1, at = 1:length(bp$order), 
+    labels = bp$order, las = 3, cex.axis = .4)
+
+###
+```
+
+
+## Genotype-Environment Association (GEA) studies with LFMM
+
+The GEA study will be based on a latent factor mixed model (LFMM), a multivariate regression model that estimates the effects of environmental variables and unobserved confounders called *latent factors*. Mixed model means that there are fixed and latent effects in the model (Frichot et al. 2013; Caye et al. 2019). 
+
+The reason for using LFMMs is that *neutral population structure* is widely recognized as acting as a confounder when estimating the effect of natural selection due to environmental conditions. Evaluating *neutral population structure* from population genomic data is, however, extremely difficult, as it requires having identified which locus is neutral and which is under selection. LFMM is a technique that avoids this circularity by estimating effects of environmental variables and latent factors simultaneously. The latent factors are computed both from genomes and from environmnent. Thus, they are not representing neutral population structure, but can be interpreted as the best estimates of the confounding effect of neutral population structure, leading to environmental effect size estimates with minimal bias. 
+
+The analysis of population structure suggests that $K = 3$ factors could be a reasonable guess for the number of factors in LFMM. 
+
+```{r}
+mod_lfmm2 <- lfmm2(input = Y,
+                   env = X, 
+                   K = 3)
+```
+
+Once the LFMM is adjusted to the genomic data,  the GEA significance values can be obtained from standard Student (`full = FALSE`) and Fischer (`full = TRUE`) tests. Here `full` means that all environmental variables are used in the test. 
+
+```{r}
+pv_lfmm2 = lfmm2.test(object = mod_lfmm2,
+                      input = Y,
+                      env = X, 
+                      full = TRUE)$pvalues
+
+plot(-log10(pv_lfmm2 ), cex = .3, xlab = "Locus",  ylab = "-Log(P)", col = "blue")
+```
+
+To make a decision about which loci have significant level of association, the FDR control algorithm can be used. The unusual $q = 20\%$ can be justified by the short list of candidate loci obtained after the multiple testing procedure (red circles). The orange line is the Bonferroni threshold for a type I error $10\%$.
+
+```{r}
+qv_lfmm2  <- qvalue::qvalue(pv_lfmm2, fdr.level = 0.2)
+
+plot(-log10(pv_lfmm2 ), cex = .3, xlab = "Locus",  ylab = "-Log(P)", col = "blue")
+# Orange line: Bonferonni multiple testing threshold for significance
+abline(h = -log10(0.1/ncol(Y)), col = "orange")
+
+candidates <- which(qv_lfmm2$significant)
+
+# Circles: Candidate loci at FDR level = 30%
+points(candidates, -log10(pv_lfmm2)[candidates], cex = .9, col = "brown")
+```
+
+The candidate list contains 21 loci. Knowing the truth about which locus is under selection makes the result a bit disappointing. The list contains 3 errors which means that the observed FDR is $3/21 = 14.3\%$, not too far from the targeted value of $4/21$. However, the power is very low (around $10\‰$), showing that most loci influenced by environmental selection remain undetected in the GEA study.     
+
+
+
+## Genomic offset: A new measure in LEA 
+
+
+Several approaches incorporate genomic information on local adaptation into predictive measures of population maladaptation across ecological changes (Fitzpatrick et al. 2015, Waldvogel et al. 2020, Capblancq et al 2020).
+Those predictive measures, called genomic offset, first estimate a statistical relationship between environmental gradients and allelic frequencies using genotype-environment association (GEA) models. The inferred relationship is then used to evaluate differences in predicted allele frequencies at pairs of points in the ecological niche.  
+
+We developed a geometrical framework for genomic offset, argueing that the measures which have primarily been defined as distances in genetic space (distance between allele frequencies), can  be alternatively viewed as distances in environmental space. Considering the duality between genetic space and environmental space, our approach links measures of genomic offset to the geometry of the ecological niche, and is implemented in the function `genetic.gap`. 
+
+
+The genetic gap is based on the estimates of environmental effect sizes obtained from an LFMM. The relationship inferred in the GEA is then used to fit and predict allelic variation at all genomic loci, alleviating the need for a set of candidate loci.  For two environmental vectors ${\bf x}$ and ${\bf y}$ in the $d$-dimensional space ($d = 4$), a scalar product is defined as 
+$$
+\langle {\bf x} , {\bf y}\rangle_{\bf b}  = {\bf x} {\bf C}_{\bf b}  {\bf y}^T 
+$$ 
+where ${\bf C}_{\bf b} = \mathbb{E}[{\bf b} {\bf b}^T]$  is the $d \times d$ covariance matrix of effect sizes and the mathematical notation $\mathbb{E}[.]$ stands for an average over all genomic loci included in the analysis. The genetic gap is computed as follows
+
+$$
+G^2({\bf x} , {\bf y}) = ({\bf x - y}) {\bf C}_{\bf b}  ({\bf x - y})^T ,
+$$
+or equivalently as 
+$$
+G^2({\bf x} , {\bf y}) = \mathbb{E}[ ({\bf x} {\bf b}^T  -   {\bf y} {\bf b}^T )^2 ] .
+$$
+
+The above equations show the duality of the definition of the genetic gap, which can be considered either as a (squared) environmental distance in the first equation, and as a (squared) distance between predicted allele frequencies in the second equation.  By analogy with a single random mating population sampled through time, the genetic gap corresponds to the definition of the tree statistic, $F_2(f({\bf x}); f({\bf y}))$, which measures the length of the tree branch separating local populations sampled at the two points (Peter 2016). The genetic gap also corresponds to the average value of Nei's statistic $\mathbb{E}[D_{\rm ST}]/2$, which evaluates the  genetic diversity between populations for which ${\bf x}$ and ${\bf y}$ are observed (Nei, 1973). 
+
+With adaptation to environmental conditions, interpretations can be more complex. For a population evolving through time for which an abrupt environmental change occurs, the genetic gap corresponds to the difference in the variance of allele frequencies across the genome 
+$$
+G^2({\bf x} , {\bf x}_t) = \mathbb{V}{\rm ar}(f({\bf x}_t)) -  \mathbb{V}{\rm ar}(f({\bf x}))
+$$
+when the change ${\bf x}_t - {\bf x}$ is orthogonal to the current conditions. In this case, the above difference can be interpreted in terms of loss of population size (or survival probability) at the sampled location.    
+
+
+To test this hypothesis,  an instantaneous change in environmental conditions was applied at the end of the simulation,and the loss in survival probability (fitness) was measured at each sampled location. The new conditions are loaded as follows.    
+
+
+```{r}
+X_pred <- offset_example$env.pred
+```
+
+The genetic gap can be computed at each sampled location (or at new locations, not shown). 
+
+```{r}
+g_gap <- genetic.gap(input = Y, 
+                     env = X, 
+                     pred.env = X_pred,
+                     K = 3)
+```                        
+
+Now, we can plot the squared root of the genetic gap vs the Euclidean environmental distance to see that they are correlated.
+
+```{r}
+# plot the squared root of the genetic gap vs Euclidean environmental distance
+Delta = X - X_pred
+dist_env = sqrt( rowSums(Delta^2) )  
+plot(dist_env, g_gap$distance, xlab ="Euclidean distance",  ylab ="sqrt(genetic gap)", cex = .6, col = "blue")
+```
+
+The survival loss (extinction) in the simulation can be compared to the genetic gap. 
+```{r}
+survival_loss <- read.table("fitness_variation.txt", header = FALSE)[,1]
+
+# plot the survival loss vs squared root of the genetic gap 
+plot(g_gap$distance, survival_loss , ylab ="Survival loss",  xlab ="sqrt(genetic gap)", cex = .6, col = "blue")
+```
+
+The correlation between the genetic gap and the survival loss is equal to 
+
+```{r}
+cor(g_gap$distance, survival_loss)^2
+```
+
+It is greater than the correlation between the environmental distance and the survival loss.
+
+```{r}
+cor(dist_env, survival_loss)^2
+```
+
+## Genomic offset from candidate loci
+
+The analysis can be rerun with a subset of candidate loci obtained from the GEA study.
+
+```{r}
+g_gap_candidate <- genetic.gap(input = Y, 
+                               env = X, 
+                               pred.env = X_pred,
+                               candidate.loci = candidates,
+                               K = 3)
+                        
+
+# plot the survival loss vs squared root of the genetic gap (candidate loci)
+
+plot(g_gap_candidate$distance, survival_loss ,
+     ylab ="Survival loss",  
+     xlab ="sqrt(genetic gap)", cex = .6, col = "blue")
+```
+
+The fit is not as good as with all loci. 
+
+```{r}
+cor(g_gap_candidate$distance, survival_loss)^2
+```
+
+
+## Importance of variables 
+
+Next we can evaluate the importance of the environmental variables in the analysis. For this, the environmental data should be scaled. For example, if there are temperature in degree Celsius and precipitation in millimeters, then it is better to consider variables that are unitless.  Scaling does not change genetic gaps.
+
+```{r}
+g_gap_scaled <- genetic.gap(input = Y, 
+                           env = X, 
+                           pred.env = X_pred,
+                           scale = TRUE,
+                           K = 3)
+                           
+# Scaling does not change genetic gaps
+plot(g_gap$offset, g_gap_scaled$offset,  cex = .6)   
+```
+
+But scaling can be useful for evaluating the relative importance of environmental variables. Here only two dimensions of the environmental space influence the genetic gap.
+
+```{r}                          
+barplot(g_gap_scaled$eigenvalues, col = "orange", xlab = "Axes", ylab = "Eigenvalues")
+```
+
+
+The loadings for the first two variables indicate their relative contribution to local adaptation. We see that the first variables in $X$ add increased contributions compared to the last ones. 
+
+```{r}
+g_gap_scaled$vectors[,1:2]
+```
+
+
+
+## References
+
+- Capblancq, T., Fitzpatrick, M. C., Bay, R. A., Exposito-Alonso, M.,  Keller, S. R. (2020). Genomic prediction of (mal)adaptation across current and future climatic landscapes. Annual Review of Ecology, Evolution, and Systematics, 51, 245-269. 
+
+- Caye, K., Jumentier, B., Lepeule, J., Fran\c cois, O. (2019). LFMM 2: fast and accurate inference of gene-environment associations in genome-wide studies. Molecular Biology and Evolution, 36(4), 852-860.
+
+- Fitzpatrick, M. C.,  Keller, S. R. (2015). Ecological genomics meets community-level modelling of biodiversity: Mapping the genomic landscape of current and future environmental adaptation. Ecology Letters, 18(1), 1-16.
+
+- Frichot, E., Schoville, S. D., Bouchard, G.,  Fran\c cois, O. (2013). Testing for associations between loci and environmental gradients using latent factor mixed models. Molecular Biology and Evolution, 30(7), 1687-1699.
+
+- Frichot, E., Mathieu, F., Trouillon, T., Bouchard, G., Fran\c cois, O. (2014). Fast and efficient estimation of individual ancestry coefficients. Genetics, 196(4), 973-983.
+
+- Frichot, E.,  Fran\c cois, O. (2015). LEA: An R package for landscape and ecological association studies. Methods in Ecology and Evolution, 6(8), 925-929.
+ 
+- Gain, C.,  Fran\c cois, O. (2021). LEA 3: Factor models in population genetics and ecological genomics with R. Molecular Ecology Resources, 21(8), 2738-2748.
+
+- Haller, B., Messer, P.W. (2019). SLiM 3: Forward Genetic Simulations Beyond the Wright–Fisher Model. Molecular Biology and Evolution, 36(3), 632-637.
+
+- Nei, M. (1973). Analysis of gene diversity in subdivided populations. Proc. Natl. Acad. Sci. USA, 70, 3321-23.
+ 
+- Peter, B. M. (2016). Admixture, population structure, and F-statistics. Genetics, 202(4), 1485-1501.
+  
+- Waldvogel, A. M., Feldmeyer, B., Rolshausen, G., Exposito-Alonso, M., Rellstab, C., Kofler, R., {\it et al.} (2020). Evolutionary genomics can improve prediction of species' responses to climate change. Evolution Letters, 4(1), 4-18.
