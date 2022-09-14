@@ -32,7 +32,7 @@ This tutorial uses a simulated data set to illustrate the main functions of LEA,
 
 ## Example data set and population struture analysis
 
-The data set contains a genotypic matrix stored in an lfmm format with 200 diploid individuals (rows) genotyped at 510 SNPs (colums), a matrix with 4 correlated environmental variables (env) measured for each individual.  The data were simulated according to a spatially-explicit evolutionary scenario implemented in the individual-based simulation program SLIM 3 (Haller and Messer 2019). The complex demographic scenario included colonization of the species range from a single origin, and adaptation to encountered environmental conditions. To simulate natural selection, adaptive traits were controlled by a polygenic architecture, with additive effects from two (unobserved) environmental variables. From the simulation, we known that about $30\%$ of loci were under the influence of the environment. 
+The data set contains a genotypic matrix stored in an lfmm format with 200 diploid individuals (rows) genotyped at 510 SNPs (columns), a matrix with 4 correlated environmental variables (env) measured for each individual.  The data were simulated according to a spatially-explicit evolutionary scenario implemented in the individual-based simulation program SLIM 3 (Haller and Messer 2019). The complex demographic scenario included colonization of the species range from a single origin, and adaptation to encountered environmental conditions. To simulate natural selection, adaptive traits were controlled by a polygenic architecture, with additive effects from two (unobserved) environmental variables. From the simulation, we known that about $30\%$ of loci were under the influence of the environment. 
 
 ```{r}
 data("offset_example")
@@ -150,7 +150,7 @@ candidates <- which(qv_lfmm2$significant)
 points(candidates, -log10(pv_lfmm2)[candidates], cex = .9, col = "brown")
 ```
 
-The candidate list contains 21 loci. Knowing the truth about which locus is under selection makes the result a bit disappointing. The list contains 3 errors which means that the observed FDR is $3/21 = 14.3\%$, not too far from the targeted value ($4/21$). However, power is very low (around $10\‰$), showing that most loci influenced by environmental selection remained undetected in the GEA study.     
+The candidate list contains 21 loci. Knowing the truth about which locus is under selection makes the result a bit disappointing. The list contains 3 errors which means that the observed FDR is $3/21 = 14.3\%$, not too far from the targeted value ($4/21$). However, power is very low (around $10\%$), showing that most loci influenced by environmental selection remained undetected in the GEA study.     
 
 
 
