@@ -1,0 +1,194 @@
+---
+title: "GF tutorial - SSMPG2022"
+author: "Olivier Francois and Clement Gain"
+date: "13/09/2022"
+output:
+  prettydoc::html_pretty:
+    self_contained: true
+    theme: cayman
+    highlight: github
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Introduction
+
+Gradient forests (GF)  is based on the random forests (RF) algorithm. The starting point to compute genetic offset with GF is to model the allelic composition of a population using non-linear functions of environmental gradients. Genetic offset can then be estimated by computing the difference in composition between two environments. If there are several environmental variables, genetic offset is obtained by performing the euclidean distance between the composition vector for the future and current environmental variables.
+
+```{r}
+# To install GF, remove the comment character in the next command line 
+# install.packages("gradientForest", repos="http://R-Forge.R-project.org")
+# To install LEA, remove the comment character in the next command line 
+# devtools::install_github("bcm-uga/LEA")
+# We use LEA in order to have access to the example dataset
+library(gradientForest)
+library(LEA)
+```
+
+This tutorial uses a simulated data set. You can find a brief analysis of population structure and a GEA analysis using four environmental variables in the LEA_tutorial_ssmpg22 file. It is highly recommended to first read the LEA tutorial in order to have a deepest understandings of the data
+
+## Short presentation of data
+
+```{r}
+data("offset_example")
+# genotypes for 200 individuals
+Y <- offset_example$geno
+
+# Four environmental variables for 200 individuals
+X <- offset_example$env
+```
+
+ 
+The data set contains a genotypic matrix stored in an lfmm format with 200 diploid individuals (rows) genotyped at 510 SNPs (colums), a matrix with 4 correlated environmental variables (env) measured for each individual.
+
+## Genotype-Environment Association (GEA) studies with LFMM
+
+The complete process to identify locus under selection is described in the LEA tutorial.
+We're using LFMM with $K = 3$ and we're then using a FDR control algorithm with a fdr level of 0.2
+
+```{r}
+mod_lfmm2 <- lfmm2(input = Y,
+                   env = X, 
+                   K = 3)
+
+pv_lfmm2 = lfmm2.test(object = mod_lfmm2,
+                      input = Y,
+                      env = X, 
+                      full = TRUE)$pvalues
+
+qv_lfmm2  <- qvalue::qvalue(pv_lfmm2, fdr.level = 0.2)
+
+plot(-log10(pv_lfmm2 ), cex = .3, xlab = "Locus",  ylab = "-Log(P)", col = "blue")
+# Orange line: Bonferonni multiple testing threshold for significance
+abline(h = -log10(0.1/ncol(Y)), col = "orange")
+
+candidates <- which(qv_lfmm2$significant)
+
+# Circles: Candidate loci at FDR level = 30%
+points(candidates, -log10(pv_lfmm2)[candidates], cex = .9, col = "brown")
+```
+
+## Genomic offset using gradient forests
+
+```{r}
+X_pred <- offset_example$env.pred
+
+```
+
+
+We now have our list of candidate loci. We will compute genetic offset using GF
+
+```{r}
+# This function aims at running GF algorithm on training data
+
+run_gradient_forest <- function(Y, X, causal_set, confounding_var=c()){
+  # GF requires a dataframe object
+  # We create two lists containing names for predictor (VAR) and names for output (OUT)
+  nb_env_var = dim(X)[2]
+  var_name <- sapply(seq(1,nb_env_var), function(x) paste("VAR",x, sep=""))
+  nb_causal <- length(causal_set)
+  output_name <- sapply(seq(1,nb_causal), function(x) paste("OUT",x, sep=""))
+  
+  
+  nb_confound <- dim(confounding_var)[2]
+  if (is.null(nb_confound)){
+    confound_name <- c()
+    df_gf <- data.frame(Y[,causal_set], X)
+  }else{
+    confound_name <- sapply(seq(1,nb_confound), function(x) paste("U",x, sep=""))
+    df_gf <- data.frame(Y[,causal_set], X, confounding_var)
+  }
+  
+  pred_name <- c(var_name, confound_name)
+  colnames(df_gf) <- c(output_name, pred_name)
+  for (name in output_name){
+    df_gf[,name] <- as.factor(df_gf[,name])
+  }
+  
+  gf <- gradientForest(data=df_gf, predictor.vars=pred_name, response.vars = output_name, ntree=500)
+  return(list(gf=gf, pred_name = var_name))
+}
+
+
+
+
+# This function converts environmental variables into allelic composition value
+# It then predict the genetic offset using the euclidean distance between
+# allelic composition of current and future environmental variables
+
+predict_gf <- function(gf, X, X_pred, pred_name){
+
+  df_cur_var <- data.frame(X)
+  df_fut_var <- data.frame(X_pred)
+  colnames(df_cur_var) <- pred_name
+  colnames(df_fut_var) <- pred_name
+  
+  currentcumimp <- predict(gf, df_cur_var)
+  futurcumimp <- predict(gf, df_fut_var)
+
+  nb_ind <- nrow(X)
+  genetic_offset <- c()
+  for (i in seq(1,nb_ind)){
+    genetic_offset <- c(genetic_offset, l2norm(futurcumimp[i,], currentcumimp[i,]))
+  }
+  
+  return(genetic_offset)
+}
+
+l2norm <- function(u, v){
+  return(sqrt(sum((u-v)^2)))
+}
+
+get_genetic_offset_gf <- function(Y, X, X_pred, causal_set, confounding_var = NULL){
+
+  
+  gf <- run_gradient_forest(Y, X, causal_set, confounding_var)
+  genoffset <- predict_gf(gf$gf, X, X_pred, gf$pred_name)
+  
+  
+  return(list(go=genoffset, varimp=gf$gf$overall.imp))
+}
+
+
+```
+
+
+```{r}
+go_gf <- get_genetic_offset_gf(Y, X, X_pred, candidates)
+```
+
+```{r}
+survival_loss <- read.table("fitness_variation.txt", header = FALSE)[,1]
+
+# plot the survival loss vs squared root of the genetic gap 
+plot(go_gf$go, survival_loss , ylab ="Survival loss",  xlab ="Genetic offset GF", cex = .6, col = "blue")
+```
+```{r}
+summary(lm(survival_loss ~ go_gf$go))
+```
+
+
+## Correcting for population structure
+
+
+We will include the latent factors of LFMM into GF as a way to try to reduce the effect of 
+confounding due to population structure
+
+
+```{r}
+go_gf_corrected <- get_genetic_offset_gf(Y, X, X_pred, candidates, confounding_var = mod_lfmm2@U)
+
+```
+
+```{r}
+plot(go_gf_corrected$go, survival_loss , ylab ="Survival loss",  xlab ="Genetic offset GF corrected", cex = .6, col = "blue")
+
+```
+```{r}
+summary(lm(survival_loss ~ go_gf_corrected$go))
+```
+In this example, using latent factors of LFMM as confounding variables does not seem to give rise to significant change in value of genetic offset.
