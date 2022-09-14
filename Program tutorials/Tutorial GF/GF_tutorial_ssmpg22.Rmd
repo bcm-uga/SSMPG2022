@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-Gradient forests (GF)  is based on the random forests (RF) algorithm. The starting point to compute genetic offset with GF is to model the allelic composition of a population using non-linear functions of environmental gradients. Genetic offset can then be estimated by computing the difference in composition between two environments. If there are several environmental variables, genetic offset is obtained by performing the euclidean distance between the composition vector for the future and current environmental variables.
+Gradient forests (GF)  is based on the random forests (RF) algorithm. The starting point to compute genetic offset with GF is to model the allelic composition of a population using non-linear functions of environmental gradients. Genetic offsets can then be estimated by computing the difference in composition between two environments. When there are several environmental variables, the genetic offset is obtained by computing the Euclidean distance between the composition vector for the future and for the current environmental variables.
 
 ```{r}
 # To install GF, remove the comment character in the next command line 
@@ -29,9 +29,9 @@ library(gradientForest)
 library(LEA)
 ```
 
-This tutorial uses a simulated data set. You can find a brief analysis of population structure and a GEA analysis using four environmental variables in the LEA_tutorial_ssmpg22 file. It is highly recommended to first read the LEA tutorial in order to have a deepest understandings of the data
+This tutorial uses a simulated data set. A brief analysis of population structure and a GEA analysis using four environmental variables can be found in the LEA_tutorial_ssmpg22 file. It is highly recommended to first read the LEA tutorial in order to better understand the data.
 
-## Short presentation of data
+## Short presentation of the data
 
 ```{r}
 data("offset_example")
@@ -43,12 +43,11 @@ X <- offset_example$env
 ```
 
  
-The data set contains a genotypic matrix stored in an lfmm format with 200 diploid individuals (rows) genotyped at 510 SNPs (colums), a matrix with 4 correlated environmental variables (env) measured for each individual.
+The data set contains a genotypic matrix stored in an lfmm format with 200 diploid individuals (rows) genotyped at 510 SNPs (columns), and a matrix with 4 correlated environmental variables (env) measured for each individual.
 
 ## Genotype-Environment Association (GEA) studies with LFMM
 
-The complete process to identify locus under selection is described in the LEA tutorial.
-We're using LFMM with $K = 3$ and we're then using a FDR control algorithm with a fdr level of 0.2
+The complete process to identify locus under selection is described in the LEA tutorial, using an LFMM with $K = 3$ and a FDR control algorithm with a fdr level of 0.2
 
 ```{r}
 mod_lfmm2 <- lfmm2(input = Y,
@@ -80,7 +79,7 @@ X_pred <- offset_example$env.pred
 ```
 
 
-We now have our list of candidate loci. We will compute genetic offset using GF
+Having obtained a list of candidate loci, the genetic offsets can be computed using GF
 
 ```{r}
 # This function aims at running GF algorithm on training data
@@ -175,8 +174,7 @@ summary(lm(survival_loss ~ go_gf$go))
 ## Correcting for population structure
 
 
-We will include the latent factors of LFMM into GF as a way to try to reduce the effect of 
-confounding due to population structure
+Here we include the latent factors of LFMM into GF to reduce the effect of confounding due to neutral population structure.
 
 
 ```{r}
@@ -191,4 +189,4 @@ plot(go_gf_corrected$go, survival_loss , ylab ="Survival loss",  xlab ="Genetic 
 ```{r}
 summary(lm(survival_loss ~ go_gf_corrected$go))
 ```
-In this example, using latent factors of LFMM as confounding variables does not seem to give rise to significant change in value of genetic offset.
+In this example, using latent factors estimated in an LFMM as confounding variables did not lead to a substantial change in the values of the genetic offset.
