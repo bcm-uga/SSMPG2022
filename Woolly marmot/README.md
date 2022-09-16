@@ -12,7 +12,7 @@ In woolly marmots, three quantitative traits are particularily involved in local
 - SCW: Super Cold Winter
 - DR: Density of Rocks
 - TSP: Tons of Skiing Potential
-- NTS: Number of Tourist in Summer
+- NTS: Number of Tourists in Summer
 
 Ten individuals were sampled at 61 source localities. 
 
