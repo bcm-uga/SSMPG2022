@@ -1,9 +1,32 @@
 
 
 
-# SSMPG 2022
+# Data challenge SSMPG 2022
 Repository for [Software and Statistical Methods for Population Genetics (SSMPG 2022)](https://ssmpg.sciencesconf.org/) (Aussois, September 19-23 2022)
 
+Attendees will have the opportunity to explore methods by studying simulated data, discussing best practices and methodological weaknesses of the studied techniques. Practical sessions will favor interactions among participants in a collaborative spirit. 
+
+
+##  1. Two problems to solve
+
+The first data set is for **woolly marmot** populations. The woolly marmot is an emblematic rodent species that lives in Thibaut's computer with GENEPOP DNA code and recently disappeared from three directories due to poor coding decisions. Thibaut would like to repopulate the three sites but want to be sure that the reintroduced individuals would be optimally adapted to local environemental conditions. The goal of the practical session is to select source populations that minimize maladaptation at the three reintroduction sites using genetic offset measures. The data consist of a matrix of genotype for $n = 500$ individuals (50 populations) genotyped at $L = 1000$ loci. Ten environmental variables have been measured for each source and reintroduction directory. 
+
+The second data set is for **Osuah tree** populations. Osuah (pronounced Aussuah) in a small village in the French alps with virtual tree species that grow in computers only. The Osuah tree is an emblematic species of Clement's computer with SLIM DNA code that also survived an abrupt environmental change. Clement recorded the survival probability for each population before and after change. The objective of the practical session is to come as close as possible to Clement's ground-thruth measure of fitness loss with genetic offset measures.  The data consist of a matrix of genotypes for $n = 300$ sampled individuals genotyped at $L = 2333$ loci. Four environmental variables were measured before and after the abrupt change in conditions. 
+
+
+## 2. Create research groups and submit your paper
+
+During data analysis sessions, participants are encouraged to create teams. Ideally a team should be composed of 4/5 participants. Teams will collectively report a synthesis of their analysis in public (last day), and send three files to the organizers for each data analysis. The three files should contain 
+
+* a list of candidate loci detected by their preferred GEA method or by their preferred combination of methods
+* a list of offset values obtained from their preferred offset method or by their preferred combination of methods
+* a short README ("Materials and Methods") file that explains all the choices made during the analysis. 
+
+Eeach team will be asked to present 2-3 slides for each data set.
+
+## 3. Evaluation
+
+Thibaut and Clement will reveal the truth about their simulation and what could be inferred from the genotypes and environmental data of whooly marmots and Osuah trees.  Don't be worried. Everyone wins! 
 
 ##  1. Install software
 
@@ -60,25 +83,3 @@ make clean all FC=ifort
 >```chmod +x baypass```
 
 
-##  2. Download simulated datasets
-
-Attendees will have the opportunity to explore methods by studying simulated data, discussing best practices and methodological weaknesses of the studied techniques. Practical sessions will favor interactions among participants in a collaborative spirit. 
-
-The first data set is for **woolly marmot** populations. The woolly marmot is an emblematic rodent species that lives in Thibaut's computer with GENEPOP DNA code and recently disappeared from three directories due to poor coding decisions. Thibaut would like to repopulate the three sites but want to be sure that the reintroduced individuals would be optimally adapted to local environemental conditions. The goal of the practical session is to select source populations that minimize maladaptation at the three reintroduction sites using genetic offset measures. The data consist of a matrix of genotype for $n = 500$ individuals (50 populations) genotyped at $L = 1000$ loci. Ten environmental variables have been measured for each source and reintroduction directory. 
-
-The second data set is for **Osuah tree** populations. Osuah (pronounced Aussuah) in a small village in the French alps with virtual tree species that grow in computers only. The Osuah tree is an emblematic species of Clement's computer with SLIM DNA code that also survived an abrupt environmental change. Clement recorded the survival probability for each population before and after change. The objective of the practical session is to come as close as possible to Clement's ground-thruth measure of fitness loss with genetic offset measures.  The data consist of a matrix of genotypes for $n = 300$ sampled individuals genotyped at $L = 2333$ loci. Four environmental variables were measured before and after the abrupt change in conditions. 
-
-
-## 3. Create research groups and submit your paper
-
-During data analysis sessions,  participants are encouraged to create teams. A team can be composed of 1 to 5 participants. Teams will collectively report a synthesis of their analysis in public (last day), and send three files to the organizers for each data analysis. The three files should contain 
-
-* a list of candidate loci detected by their preferred GEA method or by their preferred combination of methods
-* a list of offset values obtained from their preferred offset method or by their preferred  combination of methods
-* a short README ("Materials and Methods") file that explains all the choices made during the analysis. 
-
-Eeach team will be asked to present 2-3 slides for each data set.
-
-## 4. Evaluation
-
-Thibaut and Clement will reveal the truth about their simulation and what could be inferred from the genotypes and environmental data of whooly marmots and Osuah trees.  Don't be worried. Everyone wins! 
