@@ -7,7 +7,7 @@ Repository for [Software and Statistical Methods for Population Genetics (SSMPG 
 Attendees will have the opportunity to explore methods by studying simulated data, discussing best practices and methodological weaknesses of the studied techniques. Practical sessions will favor interactions among participants in a collaborative spirit. 
 
 
-##  1. Two problems to solve
+##  1. Two problems to solve - two datasets to work on
 
 The first data set is for **woolly marmot** populations. The woolly marmot is an emblematic rodent species that lives in Thibaut's computer with GENEPOP DNA code and recently disappeared from three directories due to poor coding decisions. Thibaut would like to repopulate the three sites but want to be sure that the reintroduced individuals would be optimally adapted to local environemental conditions. The goal of the practical session is to select source populations that minimize maladaptation at the three reintroduction sites using genetic offset measures. The data consist of a matrix of genotype for $n = 500$ individuals (50 populations) genotyped at $L = 1000$ loci. Ten environmental variables have been measured for each source and reintroduction directory. 
 
@@ -28,7 +28,7 @@ Eeach team will be asked to present 2-3 slides for each data set.
 
 Thibaut and Clement will reveal the truth about their simulation and what could be inferred from the genotypes and environmental data of whooly marmots and Osuah trees.  Don't be worried. Everyone wins! 
 
-##  1. Install software
+##  4. Install softwares
 
 ### Install R and Rstudio
 To participate in the practical sessions, bring your own laptop and install [R](https://cran.r-project.org/) and [RStudio](https://www.rstudio.com/), an integrated development environment (IDE) for R.
