@@ -11,3 +11,5 @@ R markdown files and links presenting short tutorials to perform GEA studies and
 * Tutorial Gradient Forest
 
 * Tutorial BAYPASS
+
+* Tutorial GDM
