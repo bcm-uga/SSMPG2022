@@ -1,19 +1,20 @@
 
 Simulated data -- Thibaut Capblancq
 
-Ten individuals were sampled at 61 source localities. In woolly marmots, three quantitative trait are particularily involve in local adaptaiton and each of them is coded by a relatively small number of genes.
+In woolly marmots, three quantitative traits are particularily involved in local adaptation - wool length, wool color and production of lanolin (wool wax). Each one of these traits is coded by a relatively small number of genes and the precise environmental variables driving selection are still unknown but should be among the 10 following variables: 
 
-The precise environmental variables driving local adaptation in woolly marmots are unknown but should be among the 10 measured variables that follow: 
-- envir1: SCW: super cold summer
-- envir2: LOS: Lots of snow
-- envir3:
-- envir4:
-- envir5:
-- envir6:
-- envir7:
-- envir8:
-- envir9:
-- envir10:
+- BWS: Bad Weather all Summer
+- SCW: Super Cold Summer
+- WR: Whiteness of the Rocks
+- GG: Greenness of the Grass
+- LSS: Lots of Snow during Summer 
+- PE: Presence of Eagles
+- SCW: Super Cold Winter
+- DR: Density of Rocks
+- TSP: Tons of Skiing Potential
+- NTS: Number of Tourist in Summer
+
+Ten individuals were sampled at 61 source localities. 
 
 The fitness of a population at a particular geographic location is defined as the probability of survival of organisms in the current (and future) habitat. 
 
