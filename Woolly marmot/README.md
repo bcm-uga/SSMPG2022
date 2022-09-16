@@ -14,18 +14,11 @@ In woolly marmots, three quantitative traits are particularily involved in local
 - TSP: Tons of Skiing Potential
 - NTS: Number of Tourists in Summer
 
-Ten individuals were sampled at 61 source localities. 
+Ten individuals were sampled at 61 source localities. The woolly_marmot.pcadapt data file contains 610 individual samples genotyped at 1000 diploid loci. The format is an n x L matrix, with n = 610 and L = 1000, with individual samples in rows and genetic loci in columns. No missing data.
 
-The fitness of a population at a particular geographic location is defined as the probability of survival of organisms in the current (and future) habitat. 
+The metadata.txt file contains the following meta data for the 610 individuals
 
-The genotypes.lfmm data file contains 300  individual samples genotyped at 2333 diploid loci. The format is an n x L matrix, with n = 300 and L = 2333, with individual samples in rows and genetic loci in columns. No missing data.
-
-The metadata.csv file contains meta data for the 300 individuals
-
-"id": individual ids
-
-"pop": population label. Each population contains 10 individuals.
-
-The 10 environmental varibles measure are:
+- "pop": population label. Each population contains 10 individuals.
+- The 10 environmental varibles measure are:
 
 
