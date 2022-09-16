@@ -7,7 +7,7 @@ Repository for [Software and Statistical Methods for Population Genetics (SSMPG 
 Attendees will have the opportunity to explore methods by studying simulated data, discussing best practices and methodological weaknesses of the studied techniques. Practical sessions will favor interactions among participants in a collaborative spirit. 
 
 
-##  1. Two problems to solve - two datasets to work on
+##  1. Two problems to solve
 
 The first challenge concern the reindtroduction of **woolly marmot**. The woolly marmot is an emblematic rodent species that lives in Thibaut's computer that recently disappeared from three directories due to poor coding decisions. Thibaut would like to repopulate the three sites but want to be sure that the reintroduced individuals would be optimally adapted to local environemental conditions. The goal of the practical session is to select source populations that minimize maladaptation at the three reintroduction sites using genetic offset measures. The data consist of a matrix of genotype for $n = 610$ individuals (61 populations) genotyped at $L = 1000$ loci (0,1,2 genotype format). Ten environmental variables have been measured for each source and reintroduction directory. The associated datasets can be found in the woolly marmot folder.
 
