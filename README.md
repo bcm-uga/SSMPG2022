@@ -73,8 +73,8 @@ The second data set is for **Osuah tree** populations. Osuah (pronounced Aussuah
 
 During data analysis sessions,  participants are encouraged to create teams. A team can be composed of 1 to 5 participants. Teams will collectively report a synthesis of their analysis in public (last day), and send three files to the organizers for each data analysis. The three files should contain 
 
-* a list of candidate loci detected by their prefered GEA method or by their prefered combination of methods
-* a list of offset values obtained from their prefered offset method or by their prefered  combination of methods
+* a list of candidate loci detected by their preferred GEA method or by their preferred combination of methods
+* a list of offset values obtained from their preferred offset method or by their preferred  combination of methods
 * a short README ("Materials and Methods") file that explains all the choices made during the analysis. 
 
 Eeach team will be asked to present 2-3 slides for each data set.
