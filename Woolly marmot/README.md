@@ -14,6 +14,6 @@ In woolly marmots, three quantitative traits are particularily involved in local
 - SCW: Super Cold Winter
 - DR: Density of Rocks
 
-Ten individuals were sampled at 61 source localities. The woolly_marmot_data.txt file contains both meta data and genotypes for 610 individual samples, with individual samples in rows and environmental variables and genetic loci in columns. Individuals were genotyped at 1000 diploid loci which are encoded in genepop format: 0 for an ancestral allele homozygote, 1 for an heterozygote and 2 for a derived allele homozygote. No missing data.
+Ten individuals were sampled at 61 source localities. The woolly_marmot_data.txt file contains both meta data and genotypes for 610 individual samples, with individual samples in rows and environmental variables and genetic loci in columns. Individuals were genotyped at 1000 diploid loci, which are encoded in genepop format: 0 for an ancestral allele homozygote, 1 for an heterozygote and 2 for a derived allele homozygote. No missing data.
 
 The Woolly_marmot_reintroduction.txt file contains environemnetal information for the three sites selected for reintroducing the Woolly marmot.
