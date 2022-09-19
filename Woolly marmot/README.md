@@ -5,7 +5,7 @@ In woolly marmots, three quantitative traits are particularily involved in local
 
 - BWS: Bad Weather all Summer
 - TSP: Tons of Skiing Potential
-- SCW: Super Cold Summer
+- SCS: Super Cold Summer
 - WR: Whiteness of the Rocks
 - GG: Greenness of the Grass
 - NTS: Number of Tourists in Summer
