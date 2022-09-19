@@ -11,15 +11,16 @@ Attendees will have the opportunity to explore methods by studying simulated dat
 
 The first challenge is the **Woolly marmot** challenge. The woolly marmot is an emblematic rodent species that lives in Thibaut's computer that recently disappeared from three directories due to poor coding decisions. Thibaut would like to repopulate the three sites but want to be sure that the reintroduced individuals would be optimally adapted to local environemental conditions. The goal of the practical session is to select source populations that minimize maladaptation at the three reintroduction sites using genetic offset measures. The data consist of a matrix of genotype for $n = 610$ individuals (61 populations) genotyped at $L = 1000$ loci (0,1,2 genotype format). Ten environmental variables have been measured for each source and reintroduction directory. The associated datasets can be found in the Woolly marmot folder.
 
-The second challenge is to measure the loss of fitness of **Osuah tree** populations after a brutal change of climate. Osuah (pronounced Aussuah) in a small village in the French alps with virtual tree species that grow in computers only. The Osuah tree is an emblematic species of Clement's computer with SLIM DNA code that recently survived an abrupt environmental change. Clement recorded the survival probability for each population before and after change. The objective of the practical session is to come as close as possible to Clement's ground-thruth measure of fitness loss with genetic offset measures.  The data consist of a matrix of genotypes for $n = 300$ sampled individuals genotyped at $L = 2333$ loci. Four environmental variables were measured before and after the abrupt change in conditions. 
+The second challenge is to measure the loss of fitness of **Osuah tree** samples after a brutal change of climate. Osuah (pronounced Aussuah) in a small village in the French alps with virtual tree species that grow in computers only. The Osuah tree is an emblematic species of Clement's computer with SLIM DNA code that recently survived an abrupt environmental change. Clement recorded the survival probability for each population before and after change. The objective of the practical session is to come as close as possible to Clement's ground-thruth measure of fitness loss with genetic offset measures.  The data consist of a matrix of genotypes for $n = 300$ sampled individuals genotyped at $L = 2333$ loci. Four environmental variables were measured before and after the abrupt change in conditions. 
 
 
 ## 2. Create research groups and submit your paper
 
 During data analysis sessions, participants are encouraged to create teams. Ideally a team should be composed of 4/5 participants. Teams will collectively report a synthesis of their analysis in public (last day), and send three files to the organizers for each data analysis. The three files should contain 
 
-* a list of candidate loci detected by their preferred GEA method or by their preferred combination of methods
-* a list of offset values obtained from their preferred offset method or by their preferred combination of methods
+* a list of candidate loci detected by their preferred GEA method or by their preferred combination of methods for both challenges
+* a list of offset values obtained from their preferred offset method or by their preferred combination of methods for each Osuah tree sample site 
+* a list of optimal source populations for the three Woolly marmot reintroduction sites
 * a short README ("Materials and Methods") file that explains all the choices made during the analysis. 
 
 Eeach team will be asked to present 2-3 slides for each data set.
