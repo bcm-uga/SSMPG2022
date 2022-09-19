@@ -28,7 +28,7 @@ Eeach team will be asked to present 2-3 slides for each data set.
 
 Thibaut and Clement will reveal the truth about their simulation and what could be inferred from the genotypes and environmental data of whooly marmots and Osuah trees.  Don't be worried. Everyone wins! 
 
-##  4. Install softwares
+##  4. Install software
 
 ### Install R and Rstudio
 To participate in the practical sessions, bring your own laptop and install [R](https://cran.r-project.org/) and [RStudio](https://www.rstudio.com/), an integrated development environment (IDE) for R.
