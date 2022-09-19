@@ -283,7 +283,7 @@ barplot(g_gap_scaled$eigenvalues, col = "orange", xlab = "Axes", ylab = "Eigenva
 ```
 
 
-The loadings for the first two variables indicate their relative contribution to local adaptation. We see that the first variables in $X$ add increased contributions compared to the last ones. 
+The loadings for the first two combinations of variables indicate their relative contribution to local adaptation. We see that the first two variables in $X$ had increased importance compared to the last ones. 
 
 ```{r}
 g_gap_scaled$vectors[,1:2]
