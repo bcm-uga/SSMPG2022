@@ -1,0 +1,200 @@
+---
+title: "Guideline for standard pre-processing of genome data"
+author: "Ann-Marie Waldvogel, University of Cologne"
+date: "19/09/2022"
+output:
+  html_document:
+    toc: yes
+    theme: united
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+This guideline gives you a good starting point to process your genome data from raw to mapped and quality filtered reads. It is thereby irrelevant whether you have sequenced single individuals or pooled DNA.<br/> Your genome scan is assumed to be
+
+* whole genome sequencing (WGS)
++ paired-end short read data
++ sequenced on an Illumina HiSeq platform
+
+
+
+## 1.   inspecting raw reads
+Raw next generation sequencing data is provided in [__.fastq__](https://en.wikipedia.org/wiki/FASTQ_format) format<br/>
+information of a single read covers four lines:<br/>
+  
+      _example.fastq_ containing a single sequence
+
+    [1] @K00137:434:HHLYHBBXX:2:1101:5335:1138:1:N:0<br/>                  
+    [2] NACAGAAAGAAATAAAAAAGCTTGGTCATATTTTCAGAGGTGCATCAAAAAGTAGAAAGAGTTCATTAGA<br/>
+    [3] +<br/>
+    [4] #AAFFJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ<br/>
+
+* Line 1 begins with a '@' character and is followed by a sequence identifier and an optional description (like a FASTA title line).
++ Line 2 is the raw sequence letters.
++ Line 3 begins with a '+' character and is optionally followed by the same sequence identifier (and any description) again.
++ Line 4 encodes the quality values for the sequence in Line 2, and must contain the same number of symbols as letters in the sequence.
+
+To inspect the amount and quality of raw reads we can use [__fastqc__](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).
+
+```{bash, eval=F, echo=T}
+fastqc --threads INT read_1.fastq read_2.fastq       
+                    # remember paired-end data = forward (read_1) + reverse (read_2) sequences
+
+firefox *.html      # inspect the fastqc report in .html
+
+```
+
+If we have multiple data sets and want to inspect fastq quality simultaneously/comparably on all samples, we can use [__multiqc__](https://multiqc.info/)
+
+```{bash, eval=F, echo=T}
+multiqc [OPTIONS] <analysis directory>
+                    # MultiQC searches a given directory for analysis logs and compiles a HTML report.
+
+firefox *.html      # inspect the report in .html
+
+```
+
+## 2.   trimming raw reads
+
+Raw sequence data might still contain adapter sequences, low-quality reads and/or reads with low-quality 5'-ends. We want to filter and/or trim these confounding signals out of the data by making use of either [__fastp__](https://github.com/OpenGene/fastp) or [__trimmomatic__](http://www.usadellab.org/cms/?page=trimmomatic).
+
+The pro to _fastp_ is that it comes as C++ implementation that allows for fast computation. This might be especially important if you have many data-sets of a genome with intermediate to large genome size sequenced at high coverage. There is a great and easy to understand manual and tutorial in the fastp github rep.
+
+The pro to _trimmomatic_ is that it allows for very flexible trimming that can help a lot in case of challenging sequencing quality.
+
+```{bash, eval=F, echo=T}
+trimmomatic.sh PE -phred33 –threads INT -trimlog sample.trimlog read_1.fastq read_2.fastq read_1.paired.fastq read_1.unpaired.fastq read_2.paired.fastq read_2.unpaired.fastq ILLUMINACLIP:adapter_all.fa:2:30:10:8:true LEADING:3 TRAILING:3 SLIDINGWINDOW:4:20 MINLEN:50 TOPHRED33       
+                    # PE            - paired end mode
+                    # ILLUMINACLIP  - remove adapters
+                    # LEADING:3     - Remove leading low quality or N bases (below quality 3)
+                    # TRAILING:3    - Remove trailing low quality or N bases (below quality 3)
+                    # SLIDINGWINDOW:4:20 - Scan the read with a 4-base wide sliding window, cutting when the average quality per base drops below 20
+                    # MINLEN:50     - Drop reads below the 50 bases long
+                    # TOPHRED33     - Output in phred33
+                    
+```
+
+Trimmomatic will produce four output files containing sequence data:<br/>
+
+1. _read_1.paired.fastq_    - forward reads surviving the trimming as pairs in match to _read_2.paired.fastq_
+2. _read_1.unpaired.fastq_  - forward reads surviving the trimming as singletons (reverse mate is dropped)
+3. _read_2.paired.fastq_    - reverse complement to _read_1.paired.fastq_
+4. _read_2.unpaired.fastq_  - reverse reads surviving the trimming as singletons (forward mate is dropped)
+
+  --> Note: trimming can be computationally intense and might take some hours (multi-threading!!!)
+  --> trimming results can again be inspected via __fastqc__ or __multiqc__ (see "1.inspecting raw reads")
+
+## 3.   uploading trimmed reads to ENA
+
+To avoid any loss of sequence data by server breakdowns, misscopying, or just loosing trace of the data in whoever's user account, it is demanded to upload trimmed sequence reads to the public [European Nucleotide Archive](https://www.ebi.ac.uk/ena/browser/home).
+
+This is a short guide for submission:
+
+* Prepare your sequence data for upload by following [this tutorial](https://ena-docs.readthedocs.io/en/latest/upload_01.html)
++ For your submission you will have to set up a personal user account at ENA
++ Use a [direct ftp connection to upload your data](https://ena-docs.readthedocs.io/en/latest/upload_02.html) from the massive ram machine (–> Using FTP Command Line Client On Linux/Mac)
++ You have now uploaded your data to an intermediate and temporary uploading area on the ENA server. 
++ Next step is to create an official ENA project with all necessary and required information about your project and the data. Lateron, you can and should integrate all different kinds of sequence data and metainformation into this project (FASTQ, BAM, etc.). 
++ After a short validation process by the ENA team, your data will be permanently integrated in the database. Setting up your ENA project, you can define from when on this data will be publicly available (usually you can block the publication for at least 1 year). Please use a realistic time period so that you can make sure to finish your analyses and scientific publication before the data will become available for everyone.
+
+    --> find all [ENA Guidelines and Tutorials](https://ena-docs.readthedocs.io/en/latest/) for data submissions
+
+## 4.   mapping to a reference genome
+
+Genomic read data in .fastq format is a loose collection of sequence information without continuous information on the biological ordering of this data. To restore the biological coherency of the data, we want to map the reads to a reference genome of our species. There are many mapping algorithms available and the choice of your best-fit mapper might depend on your species and whether the reference genome was built from the same or a related species. 
+
+For many, if not most, cases the [Burrows Wheeler Aligner](http://bio-bwa.sourceforge.net/bwa.shtml) __bwa mem__ can be recommended for mapping. Forward and reverse reads will be mapped simultaneously to increase mapping accuracy. 
+
+```{bash, eval=F, echo=T}
+/path/to/your/reference-genome.fasta   # path to your reference genome, make sure that the fasta headers are resonably short and do not include whitespaces
+
+bwa mem -t INT [OPTOINS] reference-genome.fasta read1.paired.fastq read2.paired.fastq > sample_bwamem.sam
+                                                                            # -t - number of threads
+                                                                            # output file is in .sam format
+                                                                            # when mapping PoolSeq data with bwa mem, it is recommended to define the seed length [-k 30]) in order to achieve high mapping accuracy of the data that by definition contains many polymorphisms.
+```
+
+  --> Note: depending on the amount of reads and also length of the reference genome, mapping can also be computationally intense and take some hours (multi-threading!!!)
+  
+## 5.   inspecting mapping results
+
+Mapping reads to a reference genome will produce a __.sam__ file. This [format](https://en.wikipedia.org/wiki/SAM_(file_format)) stores all the detailed information for any downstream analysis. To read, analyse and transform this information we mainly use the software package [__samtools__](http://www.htslib.org/doc/samtools.html).
+
+_5.1 Have "a look" at the sam_
+```{bash, eval=F, echo=T}
+samtools view sample_bwamem.sam | head #print the head of your sam-file in a viewable format, this will exclude the sam-header (to see the sam-header use samtools view -H)
+```
+
+_5.2 Sort sam and convert .sam to .bam_<br/>
+__.sam__ needs to be sorted according to sequence coordinates to speed up downstream processing.<br/>
+__.bam__ is the binary and more compressed version of .sam
+```{bash, eval=F, echo=T}
+samtools sort -@ INT -o sample_bwamem.sort.bam sample_bwamem.sam    
+                    # sorting and bam conversion are combined into one comand
+                    # @ - number of threads
+```
+
+_5.3 Collect the mapping success rate_
+```{bash, eval=F, echo=T}
+samtools flagstat sample_bwamem.sort.bam > sample_bwamem.sort.flagstat     
+                    # flagstat provides a short summary of the mapping result; most important here: overall amount of mapped reads and amount of properly paired reads
+```
+
+## 6.   removing low-quality alignments
+
+The sam flag includes all the information about mapping status and quality of reads (please refer to the slides about mapping and sam files). We can accordingly use this information to filter the data set.
+
+```{bash, eval=F, echo=T}
+samtools view -q 20 -f 0x0002 -F 0x0004 -F 0x0008 -b sample_bwamem.sort.bam > sample_bwamem.sort.q20.bam     
+                    # q - remove reads with mapping qual smaller than INT
+                    # f - keep reads with this flag
+                    # F - remove reads with this flag
+                    # b - output in bam
+```
+
+## 7.   removing duplicates
+
+Illumina sequencing can create two forms of duplicates (PCR-duplicates and optical duplicates, please refer to the slides about mapping and sam files). These will bias the variant calling in our data, so we want to remove duplicates. Since trimming was restricted to the 5'-end of reads, duplicates will be identifiable through identical 3'-ends irrespective of trimming. To identify and remove duplicates in our data, [__Picard Tools__](https://broadinstitute.github.io/picard/) provides an effective algorithm. There is also an implementation in samtools to remove duplicates but to my experience _picard_ is more accurate. It comes as java implementation which means that the computation is quite memory intense and can be slow depending on your server.
+```{bash, eval=F, echo=T}
+java -jar picard.jar MarkDuplicates I=sample_bwamem.sort.q20.bam O=sample_bwamem.sort.q20.rmd.bam M=sample_bwamem.sort.q20.rmd.stat VALIDATION_STRINGENCY=SILENT REMOVE_DUPLICATES=true [OPTIONS]    
+                    # I= input
+                    # O= output
+                    # M= marked duplicates metrics
+                    # VALIDATION_STRINGENCY=SILENT -  restrict verbose information
+```
+
+## 8.   collecting mapping statistics
+
+After mapping and quality filtering the genome data, it is important to collect some summary statistics of the results. [__Qualimap__](http://qualimap.conesalab.org/) is a very powerful and easy-to-use tool that performs all the necessary calculations and even visualizes different aspects of the data (please refer to the slides about mapping and sam files). If you have many data sets you can use [__MultiQC__](https://multiqc.info/).
+
+Qualimap comes along with several tools to process different data types:
+
+  * bamqc           - Evaluate NGS mapping to a reference genome
+  + rnaseq          - Evaluate RNA-seq alignment data
+  + counts          - Counts data analysis (further RNA-seq data evaluation)
+  + multi-bamqc     - Compare QC reports from multiple NGS mappings
+  + clustering      - Cluster epigenomic signals
+  + comp-counts     - Compute feature counts
+
+```{bash, eval=F, echo=T}
+qualimap <tool> [options]   # general usage
+qualimap bamqc -bam sample_bwamem.sort.q20.rmd.bam -nt INT -outformat <PDF, HTML, PDF:HTML> [OPTIONS]
+                            # example command for a single WGS data set
+                              # bam - input
+                              # nt - number of threads
+                              # outformat - pdf, html, both
+qualimap multi-bamqc -d <arg> -r [OPTIONS]
+                            # example command for multiple WGS data sets
+                              # d - File describing the input data. Format of the file is a 2- or 3-column tab-delimited table.
+                                # Column 1: sample name
+                                # Column 2: either path to the BAM QC result or path to BAM file (-r mode)
+                                # Column 3: group name (activates sample group marking)
+                              # r - run-bamqc = Raw BAM files are provided as input. If this option is activated BAM QC process first will be run for each sample, then multi-sample analysis will be performed.
+```
+
+Qualimap will create a comprehensive report with important information describing the mapping. It is important to carefully study all graphs, understand what is shown and decide whether these results meet the expected criteria. Generally, the following parameters should be collected for later documentations: genome-wide mean coverage, mean insert-size, GC-content, proportion of mapped and properly paired reads with regard to the input of trimmed reads (flagstat-output).
