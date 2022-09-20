@@ -60,7 +60,7 @@ library(dplyr)
 library(colorRamps)
 
 # read in data file with minor allele freqs & env/space variables
-gfData <- read.csv("./alpsSummerSchool/poplarSNP.ENV.data.4.GF.csv")
+gfData <- read.csv("~/poplarSNP.ENV.data.4.GF.csv")
 # in this tutorial, we will be using bioclimatic variables only
 envGF <- gfData %>% select(contains("bio")) # bioclimatic covariates
 
@@ -118,7 +118,7 @@ plot(gfCand, plot.type="C",
 # prep spatial data
 library(gtools)
 # polygon of Balsam poplar geographic range
-balm <- shapefile("./alpsSummerSchool/popubals_Dissolve.shp")
+balm <- shapefile("~/popubals_Dissolve.shp")
 
 # get climate rasters
 # uncomment to download from online database
@@ -128,7 +128,7 @@ balm <- shapefile("./alpsSummerSchool/popubals_Dissolve.shp")
 #                              path="./alpsSummerSchool")
 
 # otherwise, load from file
-rastFiles <- list.files(path="/Users/mfitzpatrick/code/Misc/alpsSummerSchool/wc2.1_5m",
+rastFiles <- list.files(path="~/wc2.1_5m",
                         full.names=T,
                         pattern="_bio_")
 #get files in correct order
@@ -157,7 +157,7 @@ mask <- climRasts[[1]]>-100
 #                                path="./alpsSummerSchool"))
 
 # same as above, but for a future climate scenario
-cmip6Rasts <- stack("/Users/mfitzpatrick/code/Misc/alpsSummerSchool/wc2.1_5m/wc2.1_5m_bioc_UKESM1-0-LL_ssp585_2061-2080.tif")
+cmip6Rasts <- stack("~/wc2.1_5m_bioc_UKESM1-0-LL_ssp585_2061-2080.tif")
 names(cmip6Rasts) <- paste("bio", 1:19, sep="_")
 cmip6Rasts <- cmip6Rasts[[which(names(cmip6Rasts) %in% colnames(envGF))]]
 cmip6Names <- names(cmip6Rasts)
@@ -256,7 +256,7 @@ library(gdm)
 library(raster)
 # read in data file with Fst & env variables (in GDM site-pair format)
 # note Fst values were scaled 0-1 to facilitate model convergence
-gdmData <- read.csv("./alpsSummerSchool/poplarFst.ENV.data.4.GDM.csv")
+gdmData <- read.csv("~/poplarFst.ENV.data.4.GDM.csv")
 
 # build individual SNP datasets
 SNPs_ref <- gdmData[,c(1,6:22)] # reference
